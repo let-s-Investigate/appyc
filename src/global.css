@@ -1,0 +1,120 @@
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css";
+
+@import "nativewind/theme";
+
+:root {
+  /* Brand / Primary */
+  --primary: #3D5AFE;
+  --primary-deep: #2C3EE0;
+  --primary-light: #5B7BFF;
+  --primary-soft: #EAEEFF;
+
+  /* Semantic */
+  --success: #22C55E;
+  --warning: #FFB020;
+  --error: #FF4D4F;
+  --info: #4D8BFF;
+
+  /* Neutrals — Light Mode */
+  --bg: #FFFFFF;
+  --surface: #F6F7FB;
+  --border: #E5E7EB;
+  --text-primary: #0D1326;
+  --text-secondary: #6B7280;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* Shadow */
+  --shadow-card: 0px 4px 16px rgba(13, 19, 38, 0.06);
+
+  /* Fonts */
+  --font-display: Inter_400Regular, sans-serif;
+  --font-mono: monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Neutrals — Dark Mode */
+    --bg: #0D0D12;
+    --surface: #16161C;
+    --border: #26262E;
+    --text-primary: #F5F6FA;
+    --text-secondary: #8A8A94;
+  }
+}
+
+@layer theme {
+  @theme {
+    /* Color mappings */
+    --color-primary: var(--primary);
+    --color-primary-deep: var(--primary-deep);
+    --color-primary-light: var(--primary-light);
+    --color-primary-soft: var(--primary-soft);
+
+    --color-success: var(--success);
+    --color-warning: var(--warning);
+    --color-error: var(--error);
+    --color-info: var(--info);
+
+    --color-bg: var(--bg);
+    --color-surface: var(--surface);
+    --color-border: var(--border);
+    --color-text-primary: var(--text-primary);
+    --color-text-secondary: var(--text-secondary);
+
+    /* Spacing mappings */
+    --spacing-xs: var(--space-xs);
+    --spacing-sm: var(--space-sm);
+    --spacing-md: var(--space-md);
+    --spacing-lg: var(--space-lg);
+    --spacing-xl: var(--space-xl);
+
+    /* Radius mappings */
+    --radius-sm: var(--radius-sm);
+    --radius-md: var(--radius-md);
+    --radius-lg: var(--radius-lg);
+    --radius-pill: var(--radius-pill);
+
+    /* Shadow mappings */
+    --shadow-card: var(--shadow-card);
+    
+    /* Font mappings */
+    --font-inter: var(--font-display);
+    --font-inter-regular: Inter_400Regular;
+    --font-inter-medium: Inter_500Medium;
+    --font-inter-semibold: Inter_600SemiBold;
+    --font-inter-bold: Inter_700Bold;
+    --font-inter-extrabold: Inter_800ExtraBold;
+
+    /* Typography scale mappings */
+    --text-h1: 32px;
+    --text-h1--line-height: 38px;
+    --text-h2: 24px;
+    --text-h2--line-height: 31px;
+    --text-h3: 20px;
+    --text-h3--line-height: 26px;
+    --text-h4: 16px;
+    --text-h4--line-height: 22px;
+    --text-body-large: 16px;
+    --text-body-large--line-height: 26px;
+    --text-body-medium: 14px;
+    --text-body-medium--line-height: 22px;
+    --text-body-small: 13px;
+    --text-body-small--line-height: 21px;
+    --text-caption: 11px;
+    --text-caption--line-height: 15px;
+  }
+}
