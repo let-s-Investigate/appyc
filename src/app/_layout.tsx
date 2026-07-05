@@ -38,6 +38,7 @@ export default function RootLayout() {
         <Stack.Screen name="recent-files" />
         <Stack.Screen name="search" />
         <Stack.Screen name="tools" />
+        <Stack.Screen name="about" />
         <Stack.Screen name="editor" />
       </Stack>
     </ThemeProvider>

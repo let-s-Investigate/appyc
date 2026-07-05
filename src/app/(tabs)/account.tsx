@@ -10,6 +10,8 @@ import { BottomTabInset, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useTabSwipe } from '@/hooks/use-tab-swipe';
 import AnimatedTabWrapper from '@/components/AnimatedTabWrapper';
+import AboutMenuRow from '@/features/about/components/about-menu-row';
+import { router } from 'expo-router';
 
 export default function AccountScreen() {
   const insets = useSafeAreaInsets();
@@ -80,7 +82,7 @@ export default function AccountScreen() {
       label: 'About ProScan',
       icon: 'info.circle',
       type: 'chevron',
-      onPress: () => {},
+      onPress: () => router.push('/about'),
     },
     {
       label: 'Logout',

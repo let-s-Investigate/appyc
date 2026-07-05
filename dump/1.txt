@@ -1,0 +1,182 @@
+1. src/features/about/constants/about-content.ts
+Data + links live here (keeps the screen dumb per Route Rules).
+/**
+ * Static content for the "About ProScan" screen.
+ * URLs are placeholders — swap them for the real destinations.
+ */
+
+// Wire to app config if you prefer:
+//   import Constants from 'expo-constants';
+//   export const APP_VERSION = Constants.expoConfig?.version ?? '9.5.7';
+export const APP_VERSION = '9.5.7';
+
+export type AboutMenuItem = {
+  id: string;
+  label: string;
+  url: string; // opened with Linking
+};
+
+export const ABOUT_MENU_ITEMS: AboutMenuItem[] = [
+  { id: 'job-vacancy', label: 'Job Vacancy', url: 'https://proscan.app/careers' },
+  { id: 'developer', label: 'Developer', url: 'https://proscan.app/developer' },
+  { id: 'partner', label: 'Partner', url: 'https://proscan.app/partner' },
+  { id: 'accessibility', label: 'Accessibility', url: 'https://proscan.app/accessibility' },
+  { id: 'privacy-policy', label: 'Privacy Policy', url: 'https://proscan.app/privacy' },
+  { id: 'feedback', label: 'Feedback', url: 'mailto:support@proscan.app' },
+  { id: 'rate-us', label: 'Rate us', url: 'https://proscan.app/rate' },
+  { id: 'website', label: 'Visit Our Website', url: 'https://proscan.app' },
+  { id: 'social', label: 'Follow us on Social Media', url: 'https://proscan.app/social' },
+];
+​
+2. src/features/about/hooks/use-about-actions.ts
+Business logic kept out of the route (Route Rules).
+import { useCallback } from 'react';
+import { Alert, Linking } from 'react-native';
+
+export function useAboutActions() {
+  const openUrl = useCallback(async (url: string) => {
+    try {
+      const canOpen = await Linking.canOpenURL(url);
+      if (!canOpen) {
+        Alert.alert('Unable to open', 'No app is available to handle this link.');
+        return;
+      }
+      await Linking.openURL(url);
+    } catch {
+      Alert.alert('Something went wrong', 'Please try again later.');
+    }
+  }, []);
+
+  return { openUrl };
+}
+​
+3. src/features/about/components/about-menu-row.tsx
+Reusable row (used 9× on About, and reusable on the settings page).
+import { Image, Pressable, View } from 'react-native';
+
+import { ThemedText } from '@/components/themed-text';
+import { Images } from '@/constants/images';
+import { useTheme } from '@/hooks/use-theme';
+
+type AboutMenuRowProps = {
+  label: string;
+  onPress: () => void;
+  showDivider?: boolean;
+};
+
+export default function AboutMenuRow({ label, onPress, showDivider = true }: AboutMenuRowProps) {
+  const theme = useTheme();
+
+  return (
+    <View>
+      <Pressable
+        onPress={onPress}
+        className="flex-row items-center justify-between px-lg py-4 active:bg-border/20"
+        hitSlop={4}
+      >
+        <ThemedText className="font-inter-regular text-body-large">{label}</ThemedText>
+        <Image
+          source={Images.icons.arrowRight}
+          className="w-5 h-5"
+          style= tintColor: theme.textSecondary 
+          resizeMode="contain"
+        />
+      </Pressable>
+
+      {showDivider ? (
+        <View className="h-[1px] mx-lg bg-[#E5E7EB] dark:bg-[#26262E] opacity-60" />
+      ) : null}
+    </View>
+  );
+}
+​
+4. src/app/about.tsx
+The screen — composes components, matches your standalone‑screen header pattern (tools.tsx / index.tsx).
+import { Image, Pressable, ScrollView, View } from 'react-native';
+import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { Images } from '@/constants/images';
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
+import AboutMenuRow from '@/features/about/components/about-menu-row';
+import { ABOUT_MENU_ITEMS, APP_VERSION } from '@/features/about/constants/about-content';
+import { useAboutActions } from '@/features/about/hooks/use-about-actions';
+
+export default function AboutScreen() {
+  const theme = useTheme();
+  const insets = useSafeAreaInsets();
+  const { openUrl } = useAboutActions();
+
+  return (
+    <ThemedView className="flex-1">
+      {/* Header */}
+      <View
+        className="flex-row items-center px-lg py-sm"
+        style= paddingTop: insets.top + Spacing.two 
+      >
+        <Pressable
+          onPress={() => router.back()}
+          className="w-11 h-11 -ml-2 items-center justify-center rounded-full active:bg-border/20"
+          hitSlop={8}
+        >
+          <Image
+            source={Images.icons.back}
+            className="w-6 h-6"
+            style= tintColor: theme.text 
+            resizeMode="contain"
+          />
+        </Pressable>
+        <ThemedText className="font-inter-bold text-h3 ml-sm">About ProScan</ThemedText>
+      </View>
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle= paddingBottom: insets.bottom + Spacing.five 
+      >
+        {/* Brand block */}
+        <View className="items-center px-lg pt-lg pb-xl">
+          <Image source={Images.logo} className="w-24 h-24 mb-md" resizeMode="contain" />
+          <ThemedText className="font-inter-bold text-h3">ProScan v{APP_VERSION}</ThemedText>
+        </View>
+
+        {/* Divider above the list */}
+        <View className="h-[1px] bg-[#E5E7EB] dark:bg-[#26262E] opacity-60" />
+
+        {/* Menu list */}
+        {ABOUT_MENU_ITEMS.map((item, index) => (
+          <AboutMenuRow
+            key={item.id}
+            label={item.label}
+            onPress={() => openUrl(item.url)}
+            showDivider={index < ABOUT_MENU_ITEMS.length - 1}
+          />
+        ))}
+      </ScrollView>
+    </ThemedView>
+  );
+}
+​
+5. Register the route — src/app/_layout.tsx
+Add about to the root Stack alongside recent-files, search, tools (it inherits your existing slide_from_right + headerShown: false):
+<Stack.Screen name="about" />
+​
+6. Map it to the settings page — src/app/(tabs)/account.tsx
+Add this row inside your existing settings menu list. Make sure router, Image, Images, and theme are already in scope (they are on that screen):
+{/* About ProScan */}
+<Pressable
+  onPress={() => router.push('/about')}
+  className="flex-row items-center justify-between px-lg py-4 active:bg-border/20"
+>
+  <ThemedText className="font-inter-regular text-body-large">About ProScan</ThemedText>
+  <Image
+    source={Images.icons.arrowRight}
+    className="w-5 h-5"
+    style= tintColor: theme.textSecondary 
+    resizeMode="contain"
+  />
+</Pressable>
+​
+Tip: since AboutMenuRow is already generic, you can instead drop <AboutMenuRow label="About ProScan" onPress={() => router.push('/about')} /> straight into the settings list to keep both screens visually identical.
