@@ -1,11 +1,9 @@
 import React from 'react';
 import { Image, Pressable, ScrollView, View, Text, useWindowDimensions } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SymbolView } from 'expo-symbols';
+import ScreenContainer from '@/components/screen-container';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { Images } from '@/constants/images';
-import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useTabSwipe } from '@/hooks/use-tab-swipe';
 import AnimatedTabWrapper from '@/components/AnimatedTabWrapper';
@@ -19,7 +17,6 @@ interface PlanItem {
 }
 
 export default function PremiumScreen() {
-  const insets = useSafeAreaInsets();
   const theme = useTheme();
   const { width: screenWidth } = useWindowDimensions();
 
@@ -70,7 +67,7 @@ export default function PremiumScreen() {
 
   return (
     <AnimatedTabWrapper index={2}>
-      <ThemedView {...swipeHandlers} className="flex-1 animate-fadeIn" style={{ paddingTop: insets.top }}>
+      <ScreenContainer {...swipeHandlers} className="animate-fadeIn">
         {/* Header Bar */}
         <View className="flex-row justify-between items-center px-lg py-xs mb-xs">
           <View className="flex-row items-center">
@@ -172,7 +169,7 @@ export default function PremiumScreen() {
             ))}
           </ScrollView>
         </View>
-      </ThemedView>
+      </ScreenContainer>
     </AnimatedTabWrapper>
   );
 }

@@ -1,182 +1,70 @@
-1. src/features/about/constants/about-content.ts
-Data + links live here (keeps the screen dumb per Route Rules).
-/**
- * Static content for the "About ProScan" screen.
- * URLs are placeholders — swap them for the real destinations.
- */
+# ProScan — PDF Toolkit Implementation Prompt
 
-// Wire to app config if you prefer:
-//   import Constants from 'expo-constants';
-//   export const APP_VERSION = Constants.expoConfig?.version ?? '9.5.7';
-export const APP_VERSION = '9.5.7';
+## ROLE
+You are building on the EXISTING ProScan mobile app (Expo + React Native + Expo Router + NativeWind, offline-first). Do NOT scaffold a new project. Reuse the current design tokens, theming (light/dark), navigation, and the camera/scanner module that is ALREADY built. Match the existing screen padding and slide page-transitions.
 
-export type AboutMenuItem = {
-  id: string;
-  label: string;
-  url: string; // opened with Linking
-};
+## GOAL
+Add a complete, offline-capable PDF toolkit (iLovePDF-style) to ProScan. Every tool must run ON-DEVICE where technically possible (no upload/no internet required) and must be accessible from a single "Tools" hub grid with clear icons and labels.
 
-export const ABOUT_MENU_ITEMS: AboutMenuItem[] = [
-  { id: 'job-vacancy', label: 'Job Vacancy', url: 'https://proscan.app/careers' },
-  { id: 'developer', label: 'Developer', url: 'https://proscan.app/developer' },
-  { id: 'partner', label: 'Partner', url: 'https://proscan.app/partner' },
-  { id: 'accessibility', label: 'Accessibility', url: 'https://proscan.app/accessibility' },
-  { id: 'privacy-policy', label: 'Privacy Policy', url: 'https://proscan.app/privacy' },
-  { id: 'feedback', label: 'Feedback', url: 'mailto:support@proscan.app' },
-  { id: 'rate-us', label: 'Rate us', url: 'https://proscan.app/rate' },
-  { id: 'website', label: 'Visit Our Website', url: 'https://proscan.app' },
-  { id: 'social', label: 'Follow us on Social Media', url: 'https://proscan.app/social' },
-];
-​
-2. src/features/about/hooks/use-about-actions.ts
-Business logic kept out of the route (Route Rules).
-import { useCallback } from 'react';
-import { Alert, Linking } from 'react-native';
+## GLOBAL RULES
+- chekc the @materials/upcoming folder here all the refrence photo are there for ui
+- Offline-first: all core tools work with no network. Only AI tools (Summarize/Translate) may require connectivity — show a clear "needs internet" state.
+- Reuse the existing camera/scanner: the "Scan" tool opens the native camera, supports multi-page capture, auto edge-detection/crop, and outputs a PDF into the file manager.
+- Reuse existing components, design tokens, spacing, colors, and the ScreenContainer/top-padding + slide transitions already in place. No new UI system, no new major dependency unless strictly required for PDF ops.
+- Each tool: source picker (from Files / from Scan / from device), live preview, progress state, success screen with Save / Share / Open actions, and full error handling.
+- Consistent empty, loading, and error states across all tools.
+- Save all outputs into the app's File Manager with proper naming (e.g. "Merged_2026-07-06.pdf").
 
-export function useAboutActions() {
-  const openUrl = useCallback(async (url: string) => {
-    try {
-      const canOpen = await Linking.canOpenURL(url);
-      if (!canOpen) {
-        Alert.alert('Unable to open', 'No app is available to handle this link.');
-        return;
-      }
-      await Linking.openURL(url);
-    } catch {
-      Alert.alert('Something went wrong', 'Please try again later.');
-    }
-  }, []);
+## TOOLS TO IMPLEMENT (grouped)
 
-  return { openUrl };
-}
-​
-3. src/features/about/components/about-menu-row.tsx
-Reusable row (used 9× on About, and reusable on the settings page).
-import { Image, Pressable, View } from 'react-native';
+### Scan & Capture (reuse existing camera)
+- Scan to PDF: multi-page camera capture → single PDF, with auto-crop, filters (B/W, grayscale, color), and reorder before saving.
+- Image to PDF: pick photos from gallery → combine into a PDF (adjust order, orientation, margins).
 
-import { ThemedText } from '@/components/themed-text';
-import { Images } from '@/constants/images';
-import { useTheme } from '@/hooks/use-theme';
+### Organize
+- Merge PDF: combine multiple PDFs in a chosen order.
+- Split PDF: extract a single page or a page range into new file(s).
+- Organize Pages: reorder, add, and delete pages via a thumbnail grid (drag to sort).
+- Rotate PDF: rotate selected or all pages; support batch.
+- Page Numbers: insert page numbers with position, font, and size options.
+- Crop PDF: crop margins or a selected area, apply to one page or the whole doc.
 
-type AboutMenuRowProps = {
-  label: string;
-  onPress: () => void;
-  showDivider?: boolean;
-};
+### Optimize
+- Compress PDF: reduce file size with quality levels (Low/Recommended/High); show before/after size.
+- Repair PDF: attempt to recover a corrupted/damaged PDF.
+- OCR PDF: run on-device text recognition to make scanned PDFs searchable/selectable (respect device language packs).
 
-export default function AboutMenuRow({ label, onPress, showDivider = true }: AboutMenuRowProps) {
-  const theme = useTheme();
+### Edit
+- Edit PDF: add text, images, shapes, and freehand annotations; edit font, size, color; move/resize elements.
+- Watermark: stamp text or image watermark with position, opacity, rotation, and typography.
+- PDF Forms: auto-detect form fields, fill them, and support creating basic fillable fields (text, checkbox, choice).
 
-  return (
-    <View>
-      <Pressable
-        onPress={onPress}
-        className="flex-row items-center justify-between px-lg py-4 active:bg-border/20"
-        hitSlop={4}
-      >
-        <ThemedText className="font-inter-regular text-body-large">{label}</ThemedText>
-        <Image
-          source={Images.icons.arrowRight}
-          className="w-5 h-5"
-          style= tintColor: theme.textSecondary 
-          resizeMode="contain"
-        />
-      </Pressable>
+### Security
+- Protect PDF: set a password / encrypt the document.
+- Unlock PDF: remove a known password from a protected PDF.
+- Sign PDF: draw/type/import a signature and place it; support self-sign flow (offline).
+- Redact PDF: permanently remove selected text/graphics (true redaction, not just overlay).
+- Compare PDF: side-by-side comparison highlighting differences between two versions.
 
-      {showDivider ? (
-        <View className="h-[1px] mx-lg bg-[#E5E7EB] dark:bg-[#26262E] opacity-60" />
-      ) : null}
-    </View>
-  );
-}
-​
-4. src/app/about.tsx
-The screen — composes components, matches your standalone‑screen header pattern (tools.tsx / index.tsx).
-import { Image, Pressable, ScrollView, View } from 'react-native';
-import { router } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+### PDF Intelligence (AI — online allowed)
+- AI Summarizer: generate a concise summary + key points from a PDF's text.
+- Translate PDF: translate content while preserving layout, fonts, and formatting.
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Images } from '@/constants/images';
-import { Spacing } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
-import AboutMenuRow from '@/features/about/components/about-menu-row';
-import { ABOUT_MENU_ITEMS, APP_VERSION } from '@/features/about/constants/about-content';
-import { useAboutActions } from '@/features/about/hooks/use-about-actions';
+## EXCLUDED (do NOT build now)
+- The entire Converter section (PDF↔Word/Excel/PowerPoint, HTML→PDF, PDF→JPG, PDF→PDF/A, PDF→Markdown).
 
-export default function AboutScreen() {
-  const theme = useTheme();
-  const insets = useSafeAreaInsets();
-  const { openUrl } = useAboutActions();
+## UX / NAVIGATION
+- Add a "Tools" hub: categorized grid (Scan & Capture, Organize, Optimize, Edit, Security, AI) matching current visual style.
+- Every tool is its own route pushed with the existing slide transition; keep consistent top padding via the shared ScreenContainer.
+- Tools that operate on a file should also be reachable from a file's context menu in the File Manager (long-press → "Use tool").
+- Respect light/dark mode fully, including status bar and nav bar icon colors.
 
-  return (
-    <ThemedView className="flex-1">
-      {/* Header */}
-      <View
-        className="flex-row items-center px-lg py-sm"
-        style= paddingTop: insets.top + Spacing.two 
-      >
-        <Pressable
-          onPress={() => router.back()}
-          className="w-11 h-11 -ml-2 items-center justify-center rounded-full active:bg-border/20"
-          hitSlop={8}
-        >
-          <Image
-            source={Images.icons.back}
-            className="w-6 h-6"
-            style= tintColor: theme.text 
-            resizeMode="contain"
-          />
-        </Pressable>
-        <ThemedText className="font-inter-bold text-h3 ml-sm">About ProScan</ThemedText>
-      </View>
+## ACCEPTANCE CRITERIA
+- All non-AI tools function fully offline and save results to the File Manager.
+- Scan uses the existing camera pipeline (multi-page, crop, filters) and produces a valid PDF.
+- No layout glitches on page transitions; no top-padding inconsistencies; no theme detection bugs.
+- Clear loading/progress, success, and error states for every tool.
+- No regressions to existing screens (Home, Files, Premium, Account) or the current scanner.
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle= paddingBottom: insets.bottom + Spacing.five 
-      >
-        {/* Brand block */}
-        <View className="items-center px-lg pt-lg pb-xl">
-          <Image source={Images.logo} className="w-24 h-24 mb-md" resizeMode="contain" />
-          <ThemedText className="font-inter-bold text-h3">ProScan v{APP_VERSION}</ThemedText>
-        </View>
-
-        {/* Divider above the list */}
-        <View className="h-[1px] bg-[#E5E7EB] dark:bg-[#26262E] opacity-60" />
-
-        {/* Menu list */}
-        {ABOUT_MENU_ITEMS.map((item, index) => (
-          <AboutMenuRow
-            key={item.id}
-            label={item.label}
-            onPress={() => openUrl(item.url)}
-            showDivider={index < ABOUT_MENU_ITEMS.length - 1}
-          />
-        ))}
-      </ScrollView>
-    </ThemedView>
-  );
-}
-​
-5. Register the route — src/app/_layout.tsx
-Add about to the root Stack alongside recent-files, search, tools (it inherits your existing slide_from_right + headerShown: false):
-<Stack.Screen name="about" />
-​
-6. Map it to the settings page — src/app/(tabs)/account.tsx
-Add this row inside your existing settings menu list. Make sure router, Image, Images, and theme are already in scope (they are on that screen):
-{/* About ProScan */}
-<Pressable
-  onPress={() => router.push('/about')}
-  className="flex-row items-center justify-between px-lg py-4 active:bg-border/20"
->
-  <ThemedText className="font-inter-regular text-body-large">About ProScan</ThemedText>
-  <Image
-    source={Images.icons.arrowRight}
-    className="w-5 h-5"
-    style= tintColor: theme.textSecondary 
-    resizeMode="contain"
-  />
-</Pressable>
-​
-Tip: since AboutMenuRow is already generic, you can instead drop <AboutMenuRow label="About ProScan" onPress={() => router.push('/about')} /> straight into the settings list to keep both screens visually identical.
+## DELIVERABLES
+For each tool: the screen/route, the processing logic, reused components, and how it plugs into the Tools hub and File Manager. List every file created or modified with a short note on what changed.

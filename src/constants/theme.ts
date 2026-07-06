@@ -74,4 +74,6 @@ export const Spacing = {
 export const Radius = radius;
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
+// One consistent top gap below the status bar for every screen
+export const ScreenTopPadding = Spacing.three; // 16px (bump to Spacing.four for 24px)
 export const MaxContentWidth = 800;

@@ -7,7 +7,7 @@ import AnimatedTabWrapper from '@/components/AnimatedTabWrapper';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Images } from '@/constants/images';
-import { BottomTabInset, Spacing } from '@/constants/theme';
+import { BottomTabInset, ScreenTopPadding, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 // Import local home components
@@ -20,7 +20,7 @@ export default function HomeScreen() {
   const theme = useTheme();
 
   const scrollContentStyle = {
-    paddingTop: safeAreaInsets.top + Spacing.two,
+    paddingTop: safeAreaInsets.top + ScreenTopPadding,
     paddingBottom: safeAreaInsets.bottom + BottomTabInset + Spacing.six,
   };
 

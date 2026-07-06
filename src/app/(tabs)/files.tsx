@@ -1,12 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { Image, Pressable, ScrollView, View, Alert, Modal, TextInput } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useTabSwipe } from '@/hooks/use-tab-swipe';
 import AnimatedTabWrapper from '@/components/AnimatedTabWrapper';
+import ScreenContainer from '@/components/screen-container';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { Images } from '@/constants/images';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
@@ -15,7 +14,6 @@ import FolderIcon from '@/features/files/components/FolderIcon';
 import { useFileActions } from '@/hooks/use-file-actions';
 
 export default function FilesScreen() {
-  const insets = useSafeAreaInsets();
   const theme = useTheme();
   const { files, folders, addFolder, deleteFolder, deleteFile } = useFilesStore();
   const { handleOpenFile } = useFileActions();
@@ -115,7 +113,7 @@ export default function FilesScreen() {
 
   return (
     <AnimatedTabWrapper index={1}>
-      <ThemedView {...swipeHandlers} className="flex-1" style={{ paddingTop: insets.top }}>
+      <ScreenContainer {...swipeHandlers}>
       {/* Header bar */}
       <View className="flex-row justify-between items-center px-lg py-xs mb-xs">
         <View className="flex-row items-center">
@@ -375,7 +373,7 @@ export default function FilesScreen() {
           </View>
         </View>
       </Modal>
-      </ThemedView>
+      </ScreenContainer>
     </AnimatedTabWrapper>
   );
 }

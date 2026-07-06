@@ -3,14 +3,13 @@ import { Image, Pressable, ScrollView, View, Alert, Switch, Text } from 'react-n
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SymbolView } from 'expo-symbols';
 import { useColorScheme } from 'nativewind';
+import ScreenContainer from '@/components/screen-container';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { Images } from '@/constants/images';
 import { BottomTabInset, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useTabSwipe } from '@/hooks/use-tab-swipe';
 import AnimatedTabWrapper from '@/components/AnimatedTabWrapper';
-import AboutMenuRow from '@/features/about/components/about-menu-row';
 import { router } from 'expo-router';
 
 export default function AccountScreen() {
@@ -94,7 +93,7 @@ export default function AccountScreen() {
 
   return (
     <AnimatedTabWrapper index={3}>
-      <ThemedView {...swipeHandlers} className="flex-1" style={{ paddingTop: insets.top }}>
+      <ScreenContainer {...swipeHandlers}>
         {/* Header bar */}
         <View className="flex-row justify-between items-center px-lg py-xs mb-xs">
           <View className="flex-row items-center">
@@ -302,7 +301,7 @@ export default function AccountScreen() {
             ))}
           </View>
         </ScrollView>
-      </ThemedView>
+      </ScreenContainer>
     </AnimatedTabWrapper>
   );
 }

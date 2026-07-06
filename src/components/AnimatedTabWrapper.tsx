@@ -1,7 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { useWindowDimensions } from 'react-native';
-import { useNavigation } from 'expo-router';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
+import { useFocusEffect } from 'expo-router';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
 import { useFilesStore } from '@/features/files/store/filesStore';
 
 interface AnimatedTabWrapperProps {
@@ -10,51 +15,44 @@ interface AnimatedTabWrapperProps {
 }
 
 export default function AnimatedTabWrapper({ children, index }: AnimatedTabWrapperProps) {
-  const navigation = useNavigation();
   const { width: screenWidth } = useWindowDimensions();
   const { setTabIndex } = useFilesStore();
 
   const translateX = useSharedValue(0);
+  const opacity = useSharedValue(1);
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      // Check what the active tab was before this focus event
+  useFocusEffect(
+    useCallback(() => {
       const prev = useFilesStore.getState().currentTabIndex;
-      
+
       if (index !== prev) {
-        // Set the tab index updates
         setTabIndex(index);
-        
-        // Slide direction:
-        // Pushing forward (index > prev) -> slide in from right
-        // Popping backward (index < prev) -> slide in from left
-        if (index > prev) {
-          translateX.value = screenWidth;
-        } else {
-          translateX.value = -screenWidth;
-        }
-        
-        // Smoothly animate the horizontal shift back to 0
+
+        // Hide immediately so the destination never flashes at its
+        // final position, place it off-screen, then slide it in.
+        opacity.value = 0;
+        translateX.value = index > prev ? screenWidth : -screenWidth;
+
+        opacity.value = withTiming(1, { duration: 90 });
         translateX.value = withTiming(0, {
-          duration: 250,
+          duration: 260,
           easing: Easing.out(Easing.cubic),
         });
+      } else {
+        // Re-focusing the same tab (e.g. coming back from a pushed screen)
+        opacity.value = 1;
+        translateX.value = 0;
       }
-    });
-
-    return unsubscribe;
-  }, [navigation, index, screenWidth, setTabIndex]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      flex: 1,
-      transform: [{ translateX: translateX.value }],
-    };
-  });
-
-  return (
-    <Animated.View style={animatedStyle}>
-      {children}
-    </Animated.View>
+      // Reanimated shared values are stable refs and must not be hook deps
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [index, screenWidth, setTabIndex])
   );
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    flex: 1,
+    opacity: opacity.value,
+    transform: [{ translateX: translateX.value }],
+  }));
+
+  return <Animated.View style={animatedStyle}>{children}</Animated.View>;
 }
