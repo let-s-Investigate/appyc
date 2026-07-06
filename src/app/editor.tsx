@@ -22,6 +22,7 @@ import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system/legacy';
 import Animated, {
+  Easing,
   FadeIn,
   FadeOut,
   SlideInDown,
@@ -74,7 +75,7 @@ function BottomSheetMenu({
       <Pressable style={{ flex: 1 }} onPress={onClose}>
         <Animated.View entering={FadeIn.duration(150)} exiting={FadeOut.duration(100)} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' }}>
           <Pressable onPress={(e) => e.stopPropagation()}>
-            <Animated.View entering={SlideInDown.duration(250).springify().damping(18)} exiting={SlideOutDown.duration(200)} style={{ backgroundColor: '#1C1C24', borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingTop: 12, paddingBottom: insetBottom + 16, paddingHorizontal: 20 }}>
+            <Animated.View entering={SlideInDown.duration(260).easing(Easing.out(Easing.cubic))} exiting={SlideOutDown.duration(200)} style={{ backgroundColor: '#1C1C24', borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingTop: 12, paddingBottom: insetBottom + 16, paddingHorizontal: 20 }}>
               {/* Drag handle */}
               <View style={{ alignSelf: 'center', width: 36, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.2)', marginBottom: 16 }} />
 
@@ -135,7 +136,7 @@ function DiscardSheet({
       <Pressable style={{ flex: 1 }} onPress={onClose}>
         <Animated.View entering={FadeIn.duration(150)} exiting={FadeOut.duration(100)} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' }}>
           <Pressable onPress={(e) => e.stopPropagation()}>
-            <Animated.View entering={SlideInDown.duration(250).springify().damping(18)} exiting={SlideOutDown.duration(200)} style={{ backgroundColor: '#1C1C24', borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingTop: 12, paddingBottom: insetBottom + 16, paddingHorizontal: 20 }}>
+            <Animated.View entering={SlideInDown.duration(260).easing(Easing.out(Easing.cubic))} exiting={SlideOutDown.duration(200)} style={{ backgroundColor: '#1C1C24', borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingTop: 12, paddingBottom: insetBottom + 16, paddingHorizontal: 20 }}>
               <View style={{ alignSelf: 'center', width: 36, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.2)', marginBottom: 20 }} />
               <View style={{ alignItems: 'center', marginBottom: 20, paddingHorizontal: 16 }}>
                 <View style={{ width: 56, height: 56, borderRadius: 16, backgroundColor: 'rgba(255,59,48,0.12)', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
@@ -831,7 +832,7 @@ export default function DocumentEditorScreen() {
         <Pressable style={{ flex: 1 }} onPress={() => setSaveModalVisible(false)}>
           <Animated.View entering={FadeIn.duration(150)} exiting={FadeOut.duration(100)} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' }}>
             <Pressable onPress={(e) => e.stopPropagation()}>
-              <Animated.View entering={SlideInDown.duration(250).springify().damping(18)} exiting={SlideOutDown.duration(200)}>
+              <Animated.View entering={SlideInDown.duration(260).easing(Easing.out(Easing.cubic))} exiting={SlideOutDown.duration(200)}>
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                   <View style={{ backgroundColor: '#1C1C24', borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingTop: 12, paddingBottom: insets.bottom + 16, paddingHorizontal: 20, maxHeight: windowHeight * 0.75 }}>
                     {/* Drag handle */}
