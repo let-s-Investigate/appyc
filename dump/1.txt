@@ -7,3 +7,18 @@ aero_live_xgKKrSFjsAGhkN0SFdraFF1__lDw7KrMeBdW-Mkest4
 
 smdgamerz1516@gmail.com
 aero_live_f3WDaTyONFJkbqIprWz6AwDm7Wu8t4bTEu6e0F3oh34
+
+
+ first let apply some fixes we have to do, the button on the scrrens you have made the text is not visible liek see on merge pdf screen no text is avaible full whilte and see 
+  when open the merge pdf the bottom sheets open so it look like transpaer the back below button is visble and conflictign both no looking proepr ,all botom sheet are not 
+  proepr fix them,on adding watermak the scaned taken picter is not visilbe while applyin the water amrks,the adding digital signature drawing canvas is not proepr fix that 
+  also,at the end see the file are not saving so make it that it will save file on phone not visble from file explore manily store in internal app storage where like 
+  com.expmapl.app here you cna save it and all file will be access able via app , pdf preview image preivew all , and also add the if i have added pdf when click on it it will 
+  open a preview poup of pdf to see all pages , same for spliting make it like draggin the pages  deleting pages dotnt make it complex to use make it as easier to use as much 
+  you cna,   the bottom sheet on pdf view it not proeply from bottom it have too mcuh space btw bootm and panel/sheet fix it rebuild bottom sheet ot applay all thign proepr and also add pdf viwer function like zoom pinch and more simpler
+
+the sving files format will be Files/here all app fodlers created or direct file will be putted here 
+com.example.app/files/{folderof ap},{files of app} so this will prtect when app got closed the file will not disappear
+  done .... 
+ use the agents and skills to build this functions proepr 
+here is what i have observed overall app now you have to make it proepr
