@@ -3,9 +3,11 @@ export interface ScannedFile {
   title: string;
   date: string;
   time: string;
-  thumbnail: any; // local require or default
+  thumbnail: { uri: string } | null;
   uri?: string;
   folderId: string | null;
+  sizeBytes?: number;
+  pageCount?: number;
 }
 
 export interface Folder {
@@ -23,7 +25,10 @@ export interface FilesState {
   currentTabIndex: number;
   previousTabIndex: number;
   setTabIndex: (index: number) => void;
-  addFile: (file: Omit<ScannedFile, 'id'>) => void;
+  addFile: (file: Omit<ScannedFile, 'id'>) => string;
+  renameFile: (fileId: string, title: string) => void;
+  moveFile: (fileId: string, folderId: string | null) => void;
+  updateFile: (fileId: string, updates: Partial<Omit<ScannedFile, 'id'>>) => void;
   addFolder: (title: string) => void;
   deleteFolder: (folderId: string) => void;
   deleteFile: (fileId: string) => void;

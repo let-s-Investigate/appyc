@@ -1,36 +1,25 @@
-import React from 'react';
-import { Image, Pressable, View, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { Image, Pressable, View } from 'react-native';
 import { router } from 'expo-router';
 import { ThemedText } from '@/components/themed-text';
 import { Images } from '@/constants/images';
 import { useTheme } from '@/hooks/use-theme';
 import { useFilesStore } from '@/features/files/store/filesStore';
+import { ScannedFile } from '@/features/files/types';
+import FileMenuSheet from '@/features/files/components/FileMenuSheet';
+import SharePanelSheet from '@/features/files/components/SharePanelSheet';
 import { useFileActions } from '@/hooks/use-file-actions';
 
 export default function RecentFiles() {
   const theme = useTheme();
-  const { files, deleteFile } = useFilesStore();
+  const { files } = useFilesStore();
   const { handleOpenFile } = useFileActions();
+
+  const [menuFile, setMenuFile] = useState<ScannedFile | null>(null);
+  const [shareFile, setShareFile] = useState<ScannedFile | null>(null);
 
   // Show only the first 3 recent files on the home screen
   const recentFilesSubset = files.slice(0, 3);
-
-  const handleFileOptions = (fileId: string, fileName: string) => {
-    Alert.alert(
-      fileName,
-      'Choose an action for this file',
-      [
-        { text: 'Rename', onPress: () => {} },
-        { text: 'Move to folder', onPress: () => {} },
-        { 
-          text: 'Delete', 
-          style: 'destructive',
-          onPress: () => deleteFile(fileId),
-        },
-        { text: 'Cancel', style: 'cancel' },
-      ]
-    );
-  };
 
   if (files.length === 0) {
     return (
@@ -45,7 +34,7 @@ export default function RecentFiles() {
   return (
     <View className="px-lg pb-xl">
       {/* Section Header (Pressable to view all recent files) */}
-      <Pressable 
+      <Pressable
         className="flex-row justify-between items-center mb-md active:opacity-75"
         onPress={() => router.push('/recent-files')}
       >
@@ -72,22 +61,24 @@ export default function RecentFiles() {
           >
             {/* Thumbnail */}
             <View className="w-14 h-16 rounded bg-white overflow-hidden border border-[#E5E7EB] dark:border-[#26262E] mr-md">
-              <Image
-                source={file.thumbnail}
-                className="w-full h-full"
-                resizeMode="cover"
-              />
+              {file.thumbnail && (
+                <Image
+                  source={file.thumbnail}
+                  className="w-full h-full"
+                  resizeMode="cover"
+                />
+              )}
             </View>
 
             {/* Document Details */}
             <View className="flex-1 justify-center">
-              <ThemedText 
+              <ThemedText
                 className="font-inter-semibold text-body-large leading-tight pr-sm"
                 numberOfLines={2}
               >
                 {file.title}
               </ThemedText>
-              <ThemedText 
+              <ThemedText
                 themeColor="textSecondary"
                 className="font-inter-regular text-body-small mt-xs"
               >
@@ -97,10 +88,10 @@ export default function RecentFiles() {
 
             {/* Actions */}
             <View className="flex-row items-center gap-xs">
-              <Pressable 
+              <Pressable
                 onPress={(e) => {
                   e.stopPropagation();
-                  handleOpenFile(file);
+                  setShareFile(file);
                 }}
                 className="w-9 h-9 items-center justify-center rounded-full active:bg-border/20"
                 hitSlop={{ top: 12, bottom: 12, left: 10, right: 10 }}
@@ -112,13 +103,13 @@ export default function RecentFiles() {
                   resizeMode="contain"
                 />
               </Pressable>
-              
-              <Pressable 
+
+              <Pressable
                 className="w-9 h-9 items-center justify-center rounded-full active:bg-border/20"
                 hitSlop={{ top: 12, bottom: 12, left: 10, right: 10 }}
                 onPress={(e) => {
                   e.stopPropagation();
-                  handleFileOptions(file.id, file.title);
+                  setMenuFile(file);
                 }}
               >
                 <Image
@@ -132,6 +123,10 @@ export default function RecentFiles() {
           </Pressable>
         ))}
       </View>
+
+      {/* File options + share sheets */}
+      <FileMenuSheet visible={!!menuFile} file={menuFile} onClose={() => setMenuFile(null)} />
+      <SharePanelSheet visible={!!shareFile} file={shareFile} onClose={() => setShareFile(null)} />
     </View>
   );
 }

@@ -11,6 +11,7 @@ interface ToolItem {
   lightBg: string;
   darkBg: string;
   tintColor: string;
+  route?: string;
 }
 
 const TOOLS: ToolItem[] = [
@@ -29,6 +30,7 @@ const TOOLS: ToolItem[] = [
     lightBg: '#FDEBDD',
     darkBg: 'rgba(255, 176, 32, 0.15)',
     tintColor: '#FFB020',
+    route: '/pdf/watermark',
   },
   {
     id: 'esign',
@@ -37,6 +39,7 @@ const TOOLS: ToolItem[] = [
     lightBg: '#FDE3E3',
     darkBg: 'rgba(255, 77, 79, 0.15)',
     tintColor: '#FF4D4F', // Error color
+    route: '/pdf/sign',
   },
   {
     id: 'split',
@@ -45,6 +48,7 @@ const TOOLS: ToolItem[] = [
     lightBg: '#EAEEFF',
     darkBg: 'rgba(61, 90, 254, 0.15)',
     tintColor: '#3D5AFE', // Primary color
+    route: '/pdf/split',
   },
   {
     id: 'merge',
@@ -53,6 +57,7 @@ const TOOLS: ToolItem[] = [
     lightBg: '#FDEBDD',
     darkBg: 'rgba(255, 176, 32, 0.15)',
     tintColor: '#FFB020',
+    route: '/pdf/merge',
   },
   {
     id: 'protect',
@@ -61,6 +66,7 @@ const TOOLS: ToolItem[] = [
     lightBg: '#DDF3EC',
     darkBg: 'rgba(34, 197, 94, 0.15)',
     tintColor: '#22C55E', // Success color
+    route: '/pdf/protect',
   },
   {
     id: 'compress',
@@ -69,6 +75,7 @@ const TOOLS: ToolItem[] = [
     lightBg: '#FDEBDD',
     darkBg: 'rgba(255, 176, 32, 0.15)',
     tintColor: '#FFB020',
+    route: '/pdf/compress',
   },
   {
     id: 'all_tools',
@@ -77,6 +84,7 @@ const TOOLS: ToolItem[] = [
     lightBg: '#EAEEFF',
     darkBg: 'rgba(61, 90, 254, 0.15)',
     tintColor: '#3D5AFE',
+    route: '/tools',
   },
 ];
 
@@ -91,8 +99,8 @@ export default function ToolGrid() {
         <Pressable
           key={tool.id}
           onPress={() => {
-            if (tool.id === 'all_tools') {
-              router.push('/tools');
+            if (tool.route) {
+              router.push(tool.route as any);
             }
           }}
           className="w-[23%] items-center mb-md active:opacity-70"

@@ -1,23 +1,11 @@
 import { Alert } from 'react-native';
+import { router } from 'expo-router';
 
 export function useFileActions() {
-  const handleOpenFile = async (file: { uri?: string; title: string }) => {
+  /** Opens a file in the in-app PDF previewer */
+  const handleOpenFile = (file: { id: string; uri?: string; title: string }) => {
     if (file.uri) {
-      try {
-        const Sharing = require('expo-sharing');
-        if (await Sharing.isAvailableAsync()) {
-          await Sharing.shareAsync(file.uri, {
-            mimeType: 'application/pdf',
-            dialogTitle: file.title,
-            UTI: 'com.adobe.pdf'
-          });
-        } else {
-          Alert.alert('File Location', file.uri);
-        }
-      } catch (err) {
-        console.error('Failed to share/open file:', err);
-        Alert.alert('Error', 'Failed to open document preview.');
-      }
+      router.push({ pathname: '/viewer', params: { fileId: file.id } });
     } else {
       Alert.alert(
         file.title,

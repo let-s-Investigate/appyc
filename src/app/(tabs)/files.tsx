@@ -10,17 +10,22 @@ import { Images } from '@/constants/images';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useFilesStore } from '@/features/files/store/filesStore';
+import { ScannedFile } from '@/features/files/types';
 import FolderIcon from '@/features/files/components/FolderIcon';
+import FileMenuSheet from '@/features/files/components/FileMenuSheet';
+import SharePanelSheet from '@/features/files/components/SharePanelSheet';
 import { useFileActions } from '@/hooks/use-file-actions';
 
 export default function FilesScreen() {
   const theme = useTheme();
-  const { files, folders, addFolder, deleteFolder, deleteFile } = useFilesStore();
+  const { files, folders, addFolder, deleteFolder } = useFilesStore();
   const { handleOpenFile } = useFileActions();
 
   const [sortOrder, setSortOrder] = useState<'name' | 'date'>('date');
   const [createFolderVisible, setCreateFolderVisible] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
+  const [menuFile, setMenuFile] = useState<ScannedFile | null>(null);
+  const [shareFile, setShareFile] = useState<ScannedFile | null>(null);
 
   // Calculate total files (files in root + files inside folders representation)
   const totalFilesCount = useMemo(() => {
@@ -81,23 +86,6 @@ export default function FilesScreen() {
           text: 'Delete', 
           style: 'destructive',
           onPress: () => deleteFolder(folderId),
-        },
-        { text: 'Cancel', style: 'cancel' },
-      ]
-    );
-  };
-
-  const handleFileOptions = (fileId: string, fileName: string) => {
-    Alert.alert(
-      fileName,
-      'Choose an action for this file',
-      [
-        { text: 'Rename', onPress: () => {} },
-        { text: 'Move to folder', onPress: () => {} },
-        { 
-          text: 'Delete', 
-          style: 'destructive',
-          onPress: () => deleteFile(fileId),
         },
         { text: 'Cancel', style: 'cancel' },
       ]
@@ -263,11 +251,13 @@ export default function FilesScreen() {
             >
               {/* Thumbnail */}
               <View className="w-14 h-16 rounded bg-white overflow-hidden border border-[#E5E7EB] dark:border-[#26262E] mr-md">
-                <Image
-                  source={file.thumbnail}
-                  className="w-full h-full"
-                  resizeMode="cover"
-                />
+                {file.thumbnail && (
+                  <Image
+                    source={file.thumbnail}
+                    className="w-full h-full"
+                    resizeMode="cover"
+                  />
+                )}
               </View>
 
               {/* Document Details */}
@@ -288,10 +278,10 @@ export default function FilesScreen() {
 
               {/* Actions */}
               <View className="flex-row items-center gap-xs">
-                <Pressable 
+                <Pressable
                   onPress={(e) => {
                     e.stopPropagation();
-                    handleOpenFile(file);
+                    setShareFile(file);
                   }}
                   className="w-9 h-9 items-center justify-center rounded-full active:bg-border/20"
                   hitSlop={8}
@@ -303,13 +293,13 @@ export default function FilesScreen() {
                     resizeMode="contain"
                   />
                 </Pressable>
-                
-                <Pressable 
+
+                <Pressable
                   className="w-9 h-9 items-center justify-center rounded-full active:bg-border/20"
                   hitSlop={8}
                   onPress={(e) => {
                     e.stopPropagation();
-                    handleFileOptions(file.id, file.title);
+                    setMenuFile(file);
                   }}
                 >
                   <Image
@@ -373,6 +363,10 @@ export default function FilesScreen() {
           </View>
         </View>
       </Modal>
+
+      {/* File options + share sheets */}
+      <FileMenuSheet visible={!!menuFile} file={menuFile} onClose={() => setMenuFile(null)} />
+      <SharePanelSheet visible={!!shareFile} file={shareFile} onClose={() => setShareFile(null)} />
       </ScreenContainer>
     </AnimatedTabWrapper>
   );

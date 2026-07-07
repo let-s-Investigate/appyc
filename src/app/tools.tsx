@@ -3,8 +3,8 @@ import { Image, Pressable, ScrollView, View, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
+import ScreenContainer from '@/components/screen-container';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { Images } from '@/constants/images';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
@@ -13,14 +13,67 @@ import { useScannerStore } from '@/features/scanner/store/scannerStore';
 interface ToolItem {
   name: string;
   description: string;
-  icon: any; // Image asset or SymbolView name
+  icon: any; // Image asset or SymbolView ios name
   isSymbol?: boolean;
+  /** Route pushed on press; use action for custom handlers */
+  route?: string;
+  action?: 'scan';
+  comingSoon?: boolean;
 }
 
 interface ToolCategory {
   title: string;
   items: ToolItem[];
 }
+
+const CATEGORIES: ToolCategory[] = [
+  {
+    title: 'Scan & Capture',
+    items: [
+      { name: 'Scan to PDF', description: 'Multi-page camera capture with auto-crop', icon: 'doc.viewfinder', isSymbol: true, action: 'scan' },
+      { name: 'Image to PDF', description: 'Combine gallery photos into a PDF', icon: Images.icons.gallery, comingSoon: true },
+      { name: 'QR & Barcode', description: 'Scan QR codes instantly', icon: Images.icons.scanCode, comingSoon: true },
+      { name: 'ID Card Scan', description: 'Dual-side card layouts', icon: 'person.text.rectangle', isSymbol: true, comingSoon: true },
+    ],
+  },
+  {
+    title: 'Organize',
+    items: [
+      { name: 'Merge PDF', description: 'Combine files into a single PDF', icon: Images.icons.mergePdf, route: '/pdf/merge' },
+      { name: 'Split PDF', description: 'Extract pages into a new file', icon: Images.icons.splitPdf, route: '/pdf/split' },
+      { name: 'Organize Pages', description: 'Reorder, add, and delete pages', icon: 'square.grid.2x2', isSymbol: true, comingSoon: true },
+      { name: 'Rotate PDF', description: 'Rotate selected or all pages', icon: 'rotate.right', isSymbol: true, comingSoon: true },
+      { name: 'Page Numbers', description: 'Insert page numbers', icon: 'number', isSymbol: true, comingSoon: true },
+      { name: 'Crop PDF', description: 'Trim margins or a selected area', icon: 'crop', isSymbol: true, comingSoon: true },
+    ],
+  },
+  {
+    title: 'Optimize',
+    items: [
+      { name: 'Compress PDF', description: 'Reduce PDF file size', icon: Images.icons.compressPdf, route: '/pdf/compress' },
+      { name: 'Repair PDF', description: 'Recover a damaged PDF', icon: 'wrench.and.screwdriver', isSymbol: true, comingSoon: true },
+      { name: 'OCR PDF', description: 'Make scanned PDFs searchable', icon: 'text.viewfinder', isSymbol: true, comingSoon: true },
+    ],
+  },
+  {
+    title: 'Edit',
+    items: [
+      { name: 'Add Watermark', description: 'Stamp text or logo overlays', icon: Images.icons.watermark, route: '/pdf/watermark' },
+      { name: 'Edit PDF', description: 'Add text, shapes, and annotations', icon: 'pencil.and.outline', isSymbol: true, comingSoon: true },
+      { name: 'PDF Forms', description: 'Fill and create form fields', icon: 'list.bullet.rectangle', isSymbol: true, comingSoon: true },
+    ],
+  },
+  {
+    title: 'Security',
+    items: [
+      { name: 'Sign PDF', description: 'eSign documents securely', icon: Images.icons.esign, route: '/pdf/sign' },
+      { name: 'Protect PDF', description: 'Add password encryption', icon: Images.icons.protectPdf, route: '/pdf/protect' },
+      { name: 'Unlock PDF', description: 'Remove a known password', icon: 'lock.open', isSymbol: true, comingSoon: true },
+      { name: 'Redact PDF', description: 'Permanently remove content', icon: 'rectangle.fill.on.rectangle.fill', isSymbol: true, comingSoon: true },
+      { name: 'Compare PDF', description: 'Highlight version differences', icon: 'rectangle.on.rectangle', isSymbol: true, comingSoon: true },
+    ],
+  },
+];
 
 export default function ToolsScreen() {
   const insets = useSafeAreaInsets();
@@ -38,7 +91,7 @@ export default function ToolsScreen() {
 
       const DocumentScanner = require('react-native-document-scanner-plugin').default;
       const { scannedImages, status: scanStatus } = await DocumentScanner.scanDocument();
-      
+
       if (scanStatus === 'success' && scannedImages && scannedImages.length > 0) {
         setPages(scannedImages);
         router.push('/editor');
@@ -71,40 +124,19 @@ export default function ToolsScreen() {
     }
   };
 
-  const CATEGORIES: ToolCategory[] = [
-    {
-      title: 'Scan Modes',
-      items: [
-        { name: 'Document Scan', description: 'Auto edge detection scanner', icon: 'doc.viewfinder', isSymbol: true },
-        { name: 'QR & Barcode', description: 'Scan QR codes instantly', icon: Images.icons.scanCode },
-        { name: 'ID Card Scan', description: 'Dual-side card layouts', icon: 'person.text.rectangle', isSymbol: true },
-        { name: 'Book Scan', description: 'Curved page flattening scan', icon: 'book', isSymbol: true },
-        { name: 'Business Card', description: 'Extract card contacts', icon: 'greetingcard', isSymbol: true },
-      ],
-    },
-    {
-      title: 'PDF & Image Tools',
-      items: [
-        { name: 'Add Watermark', description: 'Protect your files with overlays', icon: Images.icons.watermark },
-        { name: 'Digital Signature', description: 'eSign documents securely', icon: Images.icons.esign },
-        { name: 'Merge PDF', description: 'Combine files into single PDF', icon: Images.icons.mergePdf },
-        { name: 'Split PDF', description: 'Extract pages from PDF', icon: Images.icons.splitPdf },
-        { name: 'Compress PDF', description: 'Reduce PDF file size', icon: Images.icons.compressPdf },
-        { name: 'Protect PDF', description: 'Add password encryption', icon: Images.icons.protectPdf },
-      ],
-    },
-    {
-      title: 'Export & OCR',
-      items: [
-        { name: 'Extract Text (OCR)', description: 'Convert image scans to TXT', icon: 'text.justify.left', isSymbol: true },
-        { name: 'Convert to Word', description: 'Export to editable DOCX', icon: 'doc.text', isSymbol: true },
-        { name: 'Convert to Excel', description: 'Export tabular data to XLSX', icon: 'tablecells', isSymbol: true },
-      ],
-    },
-  ];
+  const handleToolPress = (tool: ToolItem) => {
+    if (tool.comingSoon) return;
+    if (tool.action === 'scan') {
+      handleDocumentScan();
+      return;
+    }
+    if (tool.route) {
+      router.push(tool.route as any);
+    }
+  };
 
   return (
-    <ThemedView className="flex-1" style={{ paddingTop: insets.top }}>
+    <ScreenContainer>
       {/* Header bar */}
       <View className="flex-row justify-between items-center px-lg py-xs mb-xs">
         <View className="flex-row items-center">
@@ -121,7 +153,7 @@ export default function ToolsScreen() {
               resizeMode="contain"
             />
           </Pressable>
-          
+
           {/* Page Title */}
           <ThemedText className="font-inter-extrabold text-h2 tracking-tight">
             All Tools
@@ -131,9 +163,9 @@ export default function ToolsScreen() {
 
       {/* Scrollable grid */}
       <ScrollView
-        contentContainerStyle={{ paddingBottom: Spacing.six }}
+        contentContainerStyle={{ paddingBottom: insets.bottom + Spacing.six }}
         showsVerticalScrollIndicator={false}
-        className="flex-1 animate-fadeIn"
+        className="flex-1"
       >
         {CATEGORIES.map((category, catIdx) => (
           <View key={catIdx} className="mb-lg">
@@ -147,12 +179,8 @@ export default function ToolsScreen() {
               {category.items.map((tool, itemIdx) => (
                 <Pressable
                   key={itemIdx}
-                  onPress={() => {
-                    if (tool.name === 'Document Scan') {
-                      handleDocumentScan();
-                    }
-                  }}
-                  className="flex-row items-center p-md rounded-xl bg-[#F6F7FB] dark:bg-[#16161C] border border-[#E5E7EB] dark:border-[#26262E] active:opacity-75"
+                  onPress={() => handleToolPress(tool)}
+                  className={`flex-row items-center p-md rounded-xl bg-[#F6F7FB] dark:bg-[#16161C] border border-[#E5E7EB] dark:border-[#26262E] active:opacity-75 ${tool.comingSoon ? 'opacity-50' : ''}`}
                 >
                   {/* Icon container */}
                   <View className="w-12 h-12 rounded-lg items-center justify-center bg-primarySoft dark:bg-[#3D5AFE]/15 mr-md">
@@ -174,9 +202,18 @@ export default function ToolsScreen() {
 
                   {/* Tool details */}
                   <View className="flex-1">
-                    <ThemedText className="font-inter-semibold text-body-large">
-                      {tool.name}
-                    </ThemedText>
+                    <View className="flex-row items-center">
+                      <ThemedText className="font-inter-semibold text-body-large">
+                        {tool.name}
+                      </ThemedText>
+                      {tool.comingSoon && (
+                        <View className="ml-sm px-sm py-[2px] rounded-pill bg-border/40">
+                          <ThemedText themeColor="textSecondary" className="font-inter-semibold text-[10px]">
+                            SOON
+                          </ThemedText>
+                        </View>
+                      )}
+                    </View>
                     <ThemedText themeColor="textSecondary" className="font-inter-regular text-body-small mt-xs">
                       {tool.description}
                     </ThemedText>
@@ -194,6 +231,6 @@ export default function ToolsScreen() {
           </View>
         ))}
       </ScrollView>
-    </ThemedView>
+    </ScreenContainer>
   );
 }

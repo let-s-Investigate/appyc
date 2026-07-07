@@ -1,5 +1,6 @@
+import 'react-native-get-random-values';
 import '@/global.css';
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
+import { DarkTheme, DefaultTheme, ThemeProvider, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'nativewind';
@@ -13,7 +14,6 @@ import {
 } from '@expo-google-fonts/inter';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import { Stack } from 'expo-router';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -36,13 +36,20 @@ export default function RootLayout() {
     <ThemeProvider value={resolvedColorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <StatusBar style={resolvedColorScheme === 'dark' ? 'light' : 'dark'} />
       <AnimatedSplashOverlay />
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="recent-files" />
         <Stack.Screen name="search" />
         <Stack.Screen name="tools" />
         <Stack.Screen name="about" />
         <Stack.Screen name="editor" />
+        <Stack.Screen name="viewer" />
+        <Stack.Screen name="pdf/merge" />
+        <Stack.Screen name="pdf/split" />
+        <Stack.Screen name="pdf/compress" />
+        <Stack.Screen name="pdf/watermark" />
+        <Stack.Screen name="pdf/sign" />
+        <Stack.Screen name="pdf/protect" />
       </Stack>
     </ThemeProvider>
   );

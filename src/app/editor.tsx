@@ -34,6 +34,7 @@ import { useTheme } from '@/hooks/use-theme';
 import { useScannerStore } from '@/features/scanner/store/scannerStore';
 import { useFilesStore } from '@/features/files/store/filesStore';
 import FolderIcon from '@/features/files/components/FolderIcon';
+import BottomSheetMenu, { SheetMenuItem } from '@/components/bottom-sheet-menu';
 
 const TOUCH_HANDLE_SIZE = 48;
 const CORNER_HANDLE_SIZE = 20;
@@ -43,78 +44,6 @@ const A4_ASPECT_RATIO = 0.707;
 const HEADER_HEIGHT = 56;
 const TOOLBAR_HEIGHT = 72;
 const BOTTOM_BAR_HEIGHT = 68;
-
-// ─── Reusable Bottom Sheet Menu ───
-type SheetMenuItem = {
-  label: string;
-  icon: { ios: string; android: string; web: string };
-  destructive?: boolean;
-  onPress: () => void;
-};
-
-function BottomSheetMenu({
-  visible,
-  title,
-  subtitle,
-  items,
-  onClose,
-  theme,
-  insetBottom
-}: {
-  visible: boolean;
-  title: string;
-  subtitle?: string;
-  items: SheetMenuItem[];
-  onClose: () => void;
-  theme: any;
-  insetBottom: number;
-}) {
-  if (!visible) return null;
-  return (
-    <Modal visible transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>
-      <Pressable style={{ flex: 1 }} onPress={onClose}>
-        <Animated.View entering={FadeIn.duration(150)} exiting={FadeOut.duration(100)} style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' }}>
-          <Pressable onPress={(e) => e.stopPropagation()}>
-            <Animated.View entering={SlideInDown.duration(260).easing(Easing.out(Easing.cubic))} exiting={SlideOutDown.duration(200)} style={{ backgroundColor: '#1C1C24', borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingTop: 12, paddingBottom: insetBottom + 16, paddingHorizontal: 20 }}>
-              {/* Drag handle */}
-              <View style={{ alignSelf: 'center', width: 36, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.2)', marginBottom: 16 }} />
-
-              {/* Title */}
-              <View style={{ marginBottom: 16, paddingHorizontal: 4 }}>
-                <Text style={{ color: '#FFFFFF', fontSize: 18, fontWeight: '700' }}>{title}</Text>
-                {subtitle && <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, fontWeight: '400', marginTop: 2 }}>{subtitle}</Text>}
-              </View>
-
-              {/* Items */}
-              {items.map((item, idx) => (
-                <Pressable
-                  key={idx}
-                  onPress={() => { onClose(); setTimeout(item.onPress, 200); }}
-                  style={({ pressed }) => ({
-                    flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 12,
-                    borderRadius: 14, marginBottom: 4,
-                    backgroundColor: pressed ? 'rgba(255,255,255,0.06)' : 'transparent'
-                  })}
-                >
-                  <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: item.destructive ? 'rgba(255,59,48,0.12)' : 'rgba(255,255,255,0.06)', alignItems: 'center', justifyContent: 'center', marginRight: 14 }}>
-                    <SymbolView name={item.icon as any} size={20} tintColor={item.destructive ? '#FF3B30' : '#FFFFFF'} />
-                  </View>
-                  <Text style={{ color: item.destructive ? '#FF3B30' : '#FFFFFF', fontSize: 15, fontWeight: '500', flex: 1 }}>{item.label}</Text>
-                  <SymbolView name={{ ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' }} size={14} tintColor="rgba(255,255,255,0.3)" />
-                </Pressable>
-              ))}
-
-              {/* Cancel button */}
-              <Pressable onPress={onClose} style={({ pressed }) => ({ marginTop: 8, height: 48, borderRadius: 14, backgroundColor: pressed ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)', alignItems: 'center', justifyContent: 'center' })}>
-                <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 15, fontWeight: '600' }}>Cancel</Text>
-              </Pressable>
-            </Animated.View>
-          </Pressable>
-        </Animated.View>
-      </Pressable>
-    </Modal>
-  );
-}
 
 // ─── Discard Confirmation Sheet ───
 function DiscardSheet({
@@ -452,9 +381,11 @@ export default function DocumentEditorScreen() {
       const formattedDate = `${pad(now.getMonth() + 1)}/${pad(now.getDate())}/${now.getFullYear()}`;
       const formattedTime = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
+      const fileInfo = await FileSystem.getInfoAsync(persistentPath);
       addFile({
         title: title.trim(), date: formattedDate, time: formattedTime,
-        thumbnail: { uri: pages[0].uri }, uri: persistentPath, folderId: selectedFolderId
+        thumbnail: { uri: pages[0].uri }, uri: persistentPath, folderId: selectedFolderId,
+        sizeBytes: fileInfo.exists ? fileInfo.size : undefined, pageCount: pages.length
       });
 
       if (await Sharing.isAvailableAsync()) {
@@ -803,7 +734,6 @@ export default function DocumentEditorScreen() {
         subtitle={pages.length > 0 ? `Page ${currentPageIndex + 1} of ${pages.length}` : undefined}
         items={moreMenuItems}
         onClose={() => setMoreMenuVisible(false)}
-        theme={theme}
         insetBottom={insets.bottom}
       />
 
@@ -814,7 +744,6 @@ export default function DocumentEditorScreen() {
         subtitle="Replace the current page with a new scan"
         items={retakeMenuItems}
         onClose={() => setRetakeMenuVisible(false)}
-        theme={theme}
         insetBottom={insets.bottom}
       />
 

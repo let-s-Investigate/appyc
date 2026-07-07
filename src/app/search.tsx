@@ -9,24 +9,30 @@ import { Images } from '@/constants/images';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useFilesStore } from '@/features/files/store/filesStore';
+import { ScannedFile } from '@/features/files/types';
 import FolderIcon from '@/features/files/components/FolderIcon';
+import FileMenuSheet from '@/features/files/components/FileMenuSheet';
+import SharePanelSheet from '@/features/files/components/SharePanelSheet';
+import { useFileActions } from '@/hooks/use-file-actions';
 
 export default function SearchScreen() {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
-  
-  const { 
-    files, 
-    folders, 
-    previousSearches, 
-    addSearchKeyword, 
-    removeSearchKeyword, 
+  const { handleOpenFile } = useFileActions();
+
+  const {
+    files,
+    folders,
+    previousSearches,
+    addSearchKeyword,
+    removeSearchKeyword,
     clearSearchKeywords,
-    deleteFile,
     deleteFolder
   } = useFilesStore();
 
   const [searchText, setSearchText] = useState('');
+  const [menuFile, setMenuFile] = useState<ScannedFile | null>(null);
+  const [shareFile, setShareFile] = useState<ScannedFile | null>(null);
 
   // Submit search keyword to history
   const handleSubmitSearch = () => {
@@ -69,23 +75,6 @@ export default function SearchScreen() {
           text: 'Delete', 
           style: 'destructive',
           onPress: () => deleteFolder(folderId),
-        },
-        { text: 'Cancel', style: 'cancel' },
-      ]
-    );
-  };
-
-  const handleFileOptions = (fileId: string, fileName: string) => {
-    Alert.alert(
-      fileName,
-      'Choose an action for this file',
-      [
-        { text: 'Rename', onPress: () => {} },
-        { text: 'Move to folder', onPress: () => {} },
-        { 
-          text: 'Delete', 
-          style: 'destructive',
-          onPress: () => deleteFile(fileId),
         },
         { text: 'Cancel', style: 'cancel' },
       ]
@@ -278,16 +267,19 @@ export default function SearchScreen() {
 
               {/* Filtered Files */}
               {filteredFiles.map((file) => (
-                <View
+                <Pressable
                   key={file.id}
-                  className="flex-row items-center p-md rounded-xl bg-[#F6F7FB] dark:bg-[#16161C] border border-[#E5E7EB] dark:border-[#26262E]"
+                  onPress={() => handleOpenFile(file)}
+                  className="flex-row items-center p-md rounded-xl bg-[#F6F7FB] dark:bg-[#16161C] border border-[#E5E7EB] dark:border-[#26262E] active:opacity-75"
                 >
                   <View className="w-14 h-16 rounded bg-white overflow-hidden border border-[#E5E7EB] dark:border-[#26262E] mr-md">
-                    <Image
-                      source={file.thumbnail}
-                      className="w-full h-full"
-                      resizeMode="cover"
-                    />
+                    {file.thumbnail && (
+                      <Image
+                        source={file.thumbnail}
+                        className="w-full h-full"
+                        resizeMode="cover"
+                      />
+                    )}
                   </View>
 
                   <View className="flex-1 justify-center">
@@ -306,9 +298,13 @@ export default function SearchScreen() {
                   </View>
 
                   <View className="flex-row items-center gap-xs">
-                    <Pressable 
+                    <Pressable
                       className="w-9 h-9 items-center justify-center rounded-full active:bg-border/20"
                       hitSlop={8}
+                      onPress={(e) => {
+                        e.stopPropagation();
+                        setShareFile(file);
+                      }}
                     >
                       <Image
                         source={Images.icons.share}
@@ -317,11 +313,14 @@ export default function SearchScreen() {
                         resizeMode="contain"
                       />
                     </Pressable>
-                    
-                    <Pressable 
+
+                    <Pressable
                       className="w-9 h-9 items-center justify-center rounded-full active:bg-border/20"
                       hitSlop={8}
-                      onPress={() => handleFileOptions(file.id, file.title)}
+                      onPress={(e) => {
+                        e.stopPropagation();
+                        setMenuFile(file);
+                      }}
                     >
                       <Image
                         source={Images.icons.menu}
@@ -331,7 +330,7 @@ export default function SearchScreen() {
                       />
                     </Pressable>
                   </View>
-                </View>
+                </Pressable>
               ))}
             </View>
           )}
@@ -362,6 +361,10 @@ export default function SearchScreen() {
           )}
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* File options + share sheets */}
+      <FileMenuSheet visible={!!menuFile} file={menuFile} onClose={() => setMenuFile(null)} />
+      <SharePanelSheet visible={!!shareFile} file={shareFile} onClose={() => setShareFile(null)} />
     </ThemedView>
   );
 }

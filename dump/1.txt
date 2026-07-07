@@ -1,70 +1,9 @@
-# ProScan — PDF Toolkit Implementation Prompt
+claude --resume 0949e9c4-5c18-46a5-a45a-5fd012a6fdf6
 
-## ROLE
-You are building on the EXISTING ProScan mobile app (Expo + React Native + Expo Router + NativeWind, offline-first). Do NOT scaffold a new project. Reuse the current design tokens, theming (light/dark), navigation, and the camera/scanner module that is ALREADY built. Match the existing screen padding and slide page-transitions.
+claude --resume 0949e9c4-5c18-46a5-a45a-5fd012a6fdf6
 
-## GOAL
-Add a complete, offline-capable PDF toolkit (iLovePDF-style) to ProScan. Every tool must run ON-DEVICE where technically possible (no upload/no internet required) and must be accessible from a single "Tools" hub grid with clear icons and labels.
+asaad.com1516@gmail.com
+aero_live_xgKKrSFjsAGhkN0SFdraFF1__lDw7KrMeBdW-Mkest4
 
-## GLOBAL RULES
-- chekc the @materials/upcoming folder here all the refrence photo are there for ui
-- Offline-first: all core tools work with no network. Only AI tools (Summarize/Translate) may require connectivity — show a clear "needs internet" state.
-- Reuse the existing camera/scanner: the "Scan" tool opens the native camera, supports multi-page capture, auto edge-detection/crop, and outputs a PDF into the file manager.
-- Reuse existing components, design tokens, spacing, colors, and the ScreenContainer/top-padding + slide transitions already in place. No new UI system, no new major dependency unless strictly required for PDF ops.
-- Each tool: source picker (from Files / from Scan / from device), live preview, progress state, success screen with Save / Share / Open actions, and full error handling.
-- Consistent empty, loading, and error states across all tools.
-- Save all outputs into the app's File Manager with proper naming (e.g. "Merged_2026-07-06.pdf").
-
-## TOOLS TO IMPLEMENT (grouped)
-
-### Scan & Capture (reuse existing camera)
-- Scan to PDF: multi-page camera capture → single PDF, with auto-crop, filters (B/W, grayscale, color), and reorder before saving.
-- Image to PDF: pick photos from gallery → combine into a PDF (adjust order, orientation, margins).
-
-### Organize
-- Merge PDF: combine multiple PDFs in a chosen order.
-- Split PDF: extract a single page or a page range into new file(s).
-- Organize Pages: reorder, add, and delete pages via a thumbnail grid (drag to sort).
-- Rotate PDF: rotate selected or all pages; support batch.
-- Page Numbers: insert page numbers with position, font, and size options.
-- Crop PDF: crop margins or a selected area, apply to one page or the whole doc.
-
-### Optimize
-- Compress PDF: reduce file size with quality levels (Low/Recommended/High); show before/after size.
-- Repair PDF: attempt to recover a corrupted/damaged PDF.
-- OCR PDF: run on-device text recognition to make scanned PDFs searchable/selectable (respect device language packs).
-
-### Edit
-- Edit PDF: add text, images, shapes, and freehand annotations; edit font, size, color; move/resize elements.
-- Watermark: stamp text or image watermark with position, opacity, rotation, and typography.
-- PDF Forms: auto-detect form fields, fill them, and support creating basic fillable fields (text, checkbox, choice).
-
-### Security
-- Protect PDF: set a password / encrypt the document.
-- Unlock PDF: remove a known password from a protected PDF.
-- Sign PDF: draw/type/import a signature and place it; support self-sign flow (offline).
-- Redact PDF: permanently remove selected text/graphics (true redaction, not just overlay).
-- Compare PDF: side-by-side comparison highlighting differences between two versions.
-
-### PDF Intelligence (AI — online allowed)
-- AI Summarizer: generate a concise summary + key points from a PDF's text.
-- Translate PDF: translate content while preserving layout, fonts, and formatting.
-
-## EXCLUDED (do NOT build now)
-- The entire Converter section (PDF↔Word/Excel/PowerPoint, HTML→PDF, PDF→JPG, PDF→PDF/A, PDF→Markdown).
-
-## UX / NAVIGATION
-- Add a "Tools" hub: categorized grid (Scan & Capture, Organize, Optimize, Edit, Security, AI) matching current visual style.
-- Every tool is its own route pushed with the existing slide transition; keep consistent top padding via the shared ScreenContainer.
-- Tools that operate on a file should also be reachable from a file's context menu in the File Manager (long-press → "Use tool").
-- Respect light/dark mode fully, including status bar and nav bar icon colors.
-
-## ACCEPTANCE CRITERIA
-- All non-AI tools function fully offline and save results to the File Manager.
-- Scan uses the existing camera pipeline (multi-page, crop, filters) and produces a valid PDF.
-- No layout glitches on page transitions; no top-padding inconsistencies; no theme detection bugs.
-- Clear loading/progress, success, and error states for every tool.
-- No regressions to existing screens (Home, Files, Premium, Account) or the current scanner.
-
-## DELIVERABLES
-For each tool: the screen/route, the processing logic, reused components, and how it plugs into the Tools hub and File Manager. List every file created or modified with a short note on what changed.
+smdgamerz1516@gmail.com
+aero_live_f3WDaTyONFJkbqIprWz6AwDm7Wu8t4bTEu6e0F3oh34
